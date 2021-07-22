@@ -258,7 +258,7 @@ QColor ColorScheme::foregroundColor() const
 }
 QColor ColorScheme::backgroundColor() const
 {
-    return QColor(255,255,255,150);
+    return QColor(0x00,0x00,0x00,0x32);
 }
 bool ColorScheme::hasDarkBackground() const
 {
