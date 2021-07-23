@@ -1,3 +1,5 @@
+This repo has modded ColorSheme.cpp file to make background transparent.
+
 #QMLTermWidget
 
 ##Description
