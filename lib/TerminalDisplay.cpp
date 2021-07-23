@@ -2298,51 +2298,7 @@ void TerminalDisplay::mouseDoubleClickEvent(QMouseEvent* ev)
 
 void TerminalDisplay::wheelEvent( QWheelEvent* ev )
 {
-  if (ev->orientation() != Qt::Vertical)
-    return;
 
-  // if the terminal program is not interested mouse events
-  // then send the event to the scrollbar if the slider has room to move
-  // or otherwise send simulated up / down key presses to the terminal program
-  // for the benefit of programs such as 'less'
-  if ( _mouseMarks )
-  {
-    bool canScroll = _scrollBar->maximum() > 0;
-      if (canScroll)
-        _scrollBar->event(ev);
-    else
-    {
-        // assume that each Up / Down key event will cause the terminal application
-        // to scroll by one line.  
-        //
-        // to get a reasonable scrolling speed, scroll by one line for every 5 degrees
-        // of mouse wheel rotation.  Mouse wheels typically move in steps of 15 degrees,
-        // giving a scroll of 3 lines
-        int key = ev->delta() > 0 ? Qt::Key_Up : Qt::Key_Down;
-
-        // QWheelEvent::delta() gives rotation in eighths of a degree
-        int wheelDegrees = ev->delta() / 8;
-        int linesToScroll = abs(wheelDegrees) / 5;
-
-        QKeyEvent keyScrollEvent(QEvent::KeyPress,key,Qt::NoModifier);
-
-        for (int i=0;i<linesToScroll;i++)
-            emit keyPressedSignal(&keyScrollEvent);
-    }
-  }
-  else
-  {
-    // terminal program wants notification of mouse activity
-    
-    int charLine;
-    int charColumn;
-    getCharacterPosition( ev->pos() , charLine , charColumn );
-    
-    emit mouseSignal( ev->delta() > 0 ? 4 : 5, 
-                      charColumn + 1, 
-                      charLine + 1 +_scrollBar->value() -_scrollBar->maximum() , 
-                      0);
-  }
 }
 
 void TerminalDisplay::tripleClickTimeout()
