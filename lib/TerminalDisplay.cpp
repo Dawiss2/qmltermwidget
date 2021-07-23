@@ -2298,8 +2298,6 @@ void TerminalDisplay::mouseDoubleClickEvent(QMouseEvent* ev)
 
 void TerminalDisplay::wheelEvent( QWheelEvent* ev )
 {
- if (ev->orientation() != Qt::Vertical)
-    return;
 
   // if the terminal program is not interested mouse events
   // then send the event to the scrollbar if the slider has room to move
@@ -2310,19 +2308,6 @@ void TerminalDisplay::wheelEvent( QWheelEvent* ev )
     bool canScroll = _scrollBar->maximum() > 0;
       if (canScroll)
         _scrollBar->event(ev);
-  }
-  else
-  {
-    // terminal program wants notification of mouse activity
-
-    int charLine;
-    int charColumn;
-    getCharacterPosition( ev->pos() , charLine , charColumn );
-
-    emit mouseSignal( ev->delta() > 0 ? 4 : 5, 
-                      charColumn + 1, 
-                      charLine + 1 +_scrollBar->value() -_scrollBar->maximum() , 
-                      0);
   }
 }
 
