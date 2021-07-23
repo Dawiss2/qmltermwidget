@@ -70,7 +70,6 @@ using namespace Konsole;
 #define loc(X,Y) ((Y)*_columns+(X))
 #endif
 
-#define yMouseScroll 1
 
 #define REPCHAR   "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
                   "abcdefgjijklmnopqrstuvwxyz" \
