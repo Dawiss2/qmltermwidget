@@ -388,7 +388,7 @@ TerminalDisplay::TerminalDisplay(QQuickItem *parent)
 
 //  KCursor::setAutoHideCursor( this, true );
   
-  setUsesMouse(false);
+  setUsesMouse(true);
   setColorTable(base_color_table);
   //setMouseTracking(true);
 
