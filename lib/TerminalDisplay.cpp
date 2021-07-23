@@ -2298,7 +2298,7 @@ void TerminalDisplay::mouseDoubleClickEvent(QMouseEvent* ev)
 
 void TerminalDisplay::wheelEvent( QWheelEvent* ev )
 {
-  if (ev->orientation() != Qt::Vertical)
+ if (ev->orientation() != Qt::Vertical)
     return;
 
   // if the terminal program is not interested mouse events
@@ -2310,22 +2310,6 @@ void TerminalDisplay::wheelEvent( QWheelEvent* ev )
     bool canScroll = _scrollBar->maximum() > 0;
       if (canScroll)
         _scrollBar->event(ev);
-    else
-    {
-        // assume that each Up / Down key event will cause the terminal application
-        // to scroll by one line.  
-        //
-        // to get a reasonable scrolling speed, scroll by one line for every 5 degrees
-        // of mouse wheel rotation.  Mouse wheels typically move in steps of 15 degrees,
-        // giving a scroll of 3 lines
-        // QWheelEvent::delta() gives rotation in eighths of a degree
-        int wheelDegrees = ev->delta() / 8;
-        int linesToScroll = abs(wheelDegrees) / 5;
-
-
-        for (int i=0;i<linesToScroll;i++)
-            emit keyPressedSignal(&keyScrollEvent);
-    }
   }
   else
   {
