@@ -122,28 +122,20 @@ QString ScreenWindow::selectedText( bool preserveLineBreaks ) const
 
 void ScreenWindow::getSelectionStart( int& column , int& line )
 {
-    _screen->getSelectionStart(column,line);
-    line -= currentLine();
+
 }
 void ScreenWindow::getSelectionEnd( int& column , int& line )
 {
-    _screen->getSelectionEnd(column,line);
-    line -= currentLine();
+
 }
 void ScreenWindow::setSelectionStart( int column , int line , bool columnMode )
 {
-    _screen->setSelectionStart( column , qMin(line + currentLine(),endWindowLine())  , columnMode);
-    
-    _bufferNeedsUpdate = true;
-    emit selectionChanged();
+
 }
 
 void ScreenWindow::setSelectionEnd( int column , int line )
 {
-    _screen->setSelectionEnd( column , qMin(line + currentLine(),endWindowLine()) );
 
-    _bufferNeedsUpdate = true;
-    emit selectionChanged();
 }
 
 bool ScreenWindow::isSelected( int column , int line )
