@@ -3171,14 +3171,20 @@ void TerminalDisplay::simulateWheel(int x, int y, int buttons, int modifiers, QP
 }
 
 void TerminalDisplay::simulateMouseMove(int x, int y, int button, int buttons, int modifiers){
+    QMouseEvent event(QEvent::MouseMove, QPointF(x, y),(Qt::MouseButton) button, (Qt::MouseButtons) buttons, (Qt::KeyboardModifiers) modifiers);
+    mouseMoveEvent(&event);
 
 }
 
 void TerminalDisplay::simulateMousePress(int x, int y, int button, int buttons, int modifiers){
+    QMouseEvent event(QEvent::MouseButtonPress, QPointF(x, y),(Qt::MouseButton) button, (Qt::MouseButtons) buttons, (Qt::KeyboardModifiers) modifiers);
+    mousePressEvent(&event);
 
 }
 
 void TerminalDisplay::simulateMouseRelease(int x, int y, int button, int buttons, int modifiers){
+    QMouseEvent event(QEvent::MouseButtonRelease, QPointF(x, y),(Qt::MouseButton) button, (Qt::MouseButtons) buttons, (Qt::KeyboardModifiers) modifiers);
+    mouseReleaseEvent(&event);
 
 }
 
