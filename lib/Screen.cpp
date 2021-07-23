@@ -1017,20 +1017,76 @@ void Screen::clearSelection()
 
 void Screen::getSelectionStart(int& column , int& line) const
 {
+    if ( selTopLeft != -1 )
+    {
+        column = selTopLeft % columns;
+        line = selTopLeft / columns; 
+    }
+    else
+    {
+        column = cuX + getHistLines();
+        line = cuY + getHistLines();
+    }
 
 }
 void Screen::getSelectionEnd(int& column , int& line) const
 {
+    if ( selBottomRight != -1 )
+    {
+        column = selBottomRight % columns;
+        line = selBottomRight / columns;
+    }
+    else
+    {
+        column = cuX + getHistLines();
+        line = cuY + getHistLines();
+    } 
 
 }
 void Screen::setSelectionStart(const int x, const int y, const bool mode)
 {
+    selBegin = loc(x,y); 
+    /* FIXME, HACK to correct for x too far to the right... */
+    if (x == columns) selBegin--;
 
+    selBottomRight = selBegin;
+    selTopLeft = selBegin;
+    blockSelectionMode = mode;
 }
 
 void Screen::setSelectionEnd( const int x, const int y)
 {
+    if (selBegin == -1) 
+        return;
 
+    int endPos =  loc(x,y); 
+
+    if (endPos < selBegin)
+    {
+        selTopLeft = endPos;
+        selBottomRight = selBegin;
+    }
+    else
+    {
+        /* FIXME, HACK to correct for x too far to the right... */
+        if (x == columns) 
+            endPos--;
+
+        selTopLeft = selBegin;
+        selBottomRight = endPos;
+    }
+
+    // Normalize the selection in column mode
+    if (blockSelectionMode)
+    {
+        int topRow = selTopLeft / columns;
+        int topColumn = selTopLeft % columns;
+        int bottomRow = selBottomRight / columns;
+        int bottomColumn = selBottomRight % columns;
+
+        selTopLeft = loc(qMin(topColumn,bottomColumn),topRow);
+        selBottomRight = loc(qMax(topColumn,bottomColumn),bottomRow);
+    }
 }
 
 bool Screen::isSelected( const int x,const int y) const
