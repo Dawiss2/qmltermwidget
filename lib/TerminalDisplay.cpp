@@ -1780,7 +1780,81 @@ void TerminalDisplay::setScrollBarPosition(ScrollBarPosition position)
 
 void TerminalDisplay::mousePressEvent(QMouseEvent* ev)
 {
+  if ( _possibleTripleClick && (ev->button()==Qt::LeftButton) ) {
+    mouseTripleClickEvent(ev);
+    return;
+  }
 
+  if ( !contentsRect().contains(ev->pos()) ) return;
+
+  if ( !_screenWindow ) return;
+
+  int charLine;
+  int charColumn;
+  getCharacterPosition(ev->pos(),charLine,charColumn);
+  QPoint pos = QPoint(charColumn,charLine);
+
+  if ( ev->button() == Qt::LeftButton)
+  {
+    _lineSelectionMode = false;
+    _wordSelectionMode = false;
+
+    emit isBusySelecting(true); // Keep it steady...
+    // Drag only when the Control key is hold
+    bool selected = false;
+
+    // The receiver of the testIsSelected() signal will adjust
+    // 'selected' accordingly.
+    //emit testIsSelected(pos.x(), pos.y(), selected);
+
+    selected =  _screenWindow->isSelected(pos.x(),pos.y());
+
+    if ((!_ctrlDrag || ev->modifiers() & Qt::ControlModifier) && selected ) {
+      // The user clicked inside selected text
+      dragInfo.state = diPending;
+      dragInfo.start = ev->pos();
+    }
+    else {
+      // No reason to ever start a drag event
+      dragInfo.state = diNone;
+
+      _preserveLineBreaks = !( ( ev->modifiers() & Qt::ControlModifier ) && !(ev->modifiers() & Qt::AltModifier) );
+      _columnSelectionMode = (ev->modifiers() & Qt::AltModifier) && (ev->modifiers() & Qt::ControlModifier);
+
+      if (_mouseMarks || (ev->modifiers() & Qt::ShiftModifier))
+      {
+         _screenWindow->clearSelection();
+
+        //emit clearSelectionSignal();
+        pos.ry() += _scrollBar->value();
+        _iPntSel = _pntSel = pos;
+        _actSel = 1; // left mouse button pressed but nothing selected yet.
+
+      }
+      else
+      {
+        emit mouseSignal( 0, charColumn + 1, charLine + 1 +_scrollBar->value() -_scrollBar->maximum() , 0);
+      }
+
+      Filter::HotSpot *spot = _filterChain->hotSpotAt(charLine, charColumn);
+      if (spot && spot->type() == Filter::HotSpot::Link)
+          spot->activate("open-action");
+    }
+  }
+  else if ( ev->button() == Qt::MidButton )
+  {
+    if ( _mouseMarks || (!_mouseMarks && (ev->modifiers() & Qt::ShiftModifier)) )
+      emitSelection(true,ev->modifiers() & Qt::ControlModifier);
+    else
+      emit mouseSignal( 1, charColumn +1, charLine +1 +_scrollBar->value() -_scrollBar->maximum() , 0);
+  }
+  else if ( ev->button() == Qt::RightButton )
+  {
+    if (_mouseMarks || (ev->modifiers() & Qt::ShiftModifier)) 
+        emit configureRequest(ev->pos());
+    else
+        emit mouseSignal( 2, charColumn +1, charLine +1 +_scrollBar->value() -_scrollBar->maximum() , 0);
+  }
 }
 
 QList<QAction*> TerminalDisplay::filterActions(const QPoint& position)
